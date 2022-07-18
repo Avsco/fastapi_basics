@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 from fastapi import Body, FastAPI, Path, Query
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 app = FastAPI()
 
@@ -36,6 +36,10 @@ class Person(BaseModel):
         lt=150,
         description="Age of the person"
         )
+    email: EmailStr = Field(
+        ...,
+        description="Email of the person"
+        )
     hair_color: Optional[HairColor] = Field(default = None)    
     is_maried: Optional[bool] = Field(
         default=False,
@@ -47,6 +51,7 @@ class Person(BaseModel):
             "example": {
                 "first_name": "John",
                 "last_name": "Doe",
+                "email": "JonhDoe@asd.com",
                 "age": 25,
                 "hair_color": "brown",
                 "is_maried": True
