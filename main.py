@@ -42,6 +42,17 @@ class Person(BaseModel):
         description="Is the person married?"
         )
 
+    class Config:
+        schema_extra = {
+            "example": {
+                "first_name": "John",
+                "last_name": "Doe",
+                "age": 25,
+                "hair_color": "brown",
+                "is_maried": True
+            }
+        }
+
 @app.get("/")
 def root():
     return {"message": "Hello World"}
