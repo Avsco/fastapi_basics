@@ -35,3 +35,15 @@ def show_person(
         )
 ):
     return {name: age}
+
+@app.get('/person/detail/{person_id}')
+def show_person_detail(
+    person_id: int = Path(
+        ...,
+        gt=0,
+        lte=100,
+        title="Person ID",
+        description="This is the person ID. It's between 1 and 100 characters"
+        ),
+):
+    return {person_id : "person_id"}
