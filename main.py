@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional
-from fastapi import Body, FastAPI, Path, Query
+from fastapi import Body, FastAPI, Path, Query, status
 from pydantic import BaseModel, EmailStr, Field
 
 app = FastAPI()
@@ -17,52 +17,58 @@ class Location(BaseModel):
     state: str
     country: str
 
-class Person(BaseModel):
+class BasePerson(BaseModel):
     first_name: str = Field(
         ...,
         min_length=1,
         max_length=50,
-        description="First name of the person"
+        description="First name of the person",
+        example="John",
         )
     last_name: str = Field(
         ...,
         min_length=1,
         max_length=50,
-        description="First name of the person"
+        description="First name of the person",
+        example="Doe"
         )
     age: int = Field(
         ...,
         gt=0,
         lt=150,
-        description="Age of the person"
+        description="Age of the person",
+        example=25
         )
     email: EmailStr = Field(
         ...,
-        description="Email of the person"
+        description="Email of the person",
+        example="asd@asd.com"
         )
     hair_color: Optional[HairColor] = Field(default = None)    
     is_maried: Optional[bool] = Field(
         default=False,
-        description="Is the person married?"
+        description="Is the person married?",
+        example=False
         )
 
-    class Config:
-        schema_extra = {
-            "example": {
-                "first_name": "John",
-                "last_name": "Doe",
-                "email": "JonhDoe@asd.com",
-                "age": 25,
-                "hair_color": "brown",
-                "is_maried": True
-            }
-        }
+class Person(BasePerson): 
+    password: str = Field(
+        ...,
+        min_length=8,
+        max_length=50,
+        description="Password of the person",
+        example='12345678'
+        )
+
+
+class PersonOut(BaseModel):
+    pass
 
 @app.get("/")
 def root():
     return {"message": "Hello World"}
 
-@app.post('/person')
+@app.post('/person', status_code=status.HTTP_201_CREATED, response_model=BasePerson)
 def create_person(person: Person = Body(...)):
     return person.dict()
 
@@ -108,7 +114,7 @@ def update_person(
         description="This is the person ID. It's between 1 and 100 characters",
         example=123
         ),
-    person: Person = Body(...),
+    person: BasePerson = Body(...),
     location: Location = Body(...),
 ):
     results = person.dict()
