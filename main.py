@@ -1,7 +1,7 @@
 from email.policy import default
 from enum import Enum
 from typing import Optional
-from fastapi import Body, Cookie, FastAPI, Form, Header, Path, Query, status
+from fastapi import Body, Cookie, FastAPI, File, Form, Header, Path, Query, UploadFile, status
 from pydantic import BaseModel, EmailStr, Field
 
 app = FastAPI()
@@ -160,3 +160,14 @@ def contact(
     ads: Optional[str] = Cookie(default=None),   
 ):
     return user_agent
+
+@app.post('/post-image', status_code=status.HTTP_200_OK)
+def post_image(
+    image: UploadFile = File(...),
+
+):
+    return {
+        "Filename": image.filename,
+        "Format": image.content_type,
+        "Size(kb)": len(image.file.read()) / 1024
+    }
