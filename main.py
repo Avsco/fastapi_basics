@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional
-from fastapi import Body, FastAPI, Path, Query, status
+from fastapi import Body, FastAPI, Form, Path, Query, status
 from pydantic import BaseModel, EmailStr, Field
 
 app = FastAPI()
@@ -60,9 +60,22 @@ class Person(BasePerson):
         example='12345678'
         )
 
-
 class PersonOut(BaseModel):
     pass
+
+class LoginOut(BaseModel):
+    username: str = Field(
+        ...,
+        min_length=1,
+        max_length=50,
+        description="User name of the person",
+        example="John@20"
+        )
+    message: str = Field(
+        default="Login successful",
+        description="Message of the login",
+        example="Login successful"
+        )
 
 @app.get("/")
 def root():
@@ -120,3 +133,7 @@ def update_person(
     results = person.dict()
     results.update(location.dict())
     return results
+
+@app.post('/login', response_model=LoginOut, status_code=status.HTTP_200_OK)
+def login(username: str = Form(...), pasword: str = Form(...)):
+    return LoginOut(username=username)
